@@ -1,31 +1,44 @@
 import { Request, Response, Router } from "express";
 
-const router: Router = Router()
+const router: Router = Router();
 
 type TUser = {
-    name: string,
-    email: string
+  name: string;
+  todos: string[];
+};
+
+let userArr: TUser[] = [];
+
+router.post("/add", (req: Request, res: Response) => {
+  let name: string = req.body.name
+  let todos: string = req.body.todos
+  let message: string
+
+  const result  = userArr.find(a => a.name === name)
+
+  if (result) {
+    message = ''
+ 
+    userArr.forEach((user: { name: string; todos: string[] }) => {
+        if (user.name === name) {
+            user.todos.push(todos);
+        }
+    });
+} else {
+  try {
+    
+    userArr.push({ name:name, todos:[todos] });
+    
+    message = `Todo added successfully for user ${name}.`
+    res.json({message: message})
+   
+  } catch (error) {
+    console.log("error ")
+  }
+ 
 }
-let myUser: Array<TUser> = []
-let totalUserCount: number = 0
+  
+});
 
-router.post('/users', (req: Request, res: Response)=>{
-    let userCount: number = 0
-    userCount = myUser.push(req.body)
-    res.json({message: "User successfully added"})
-})
 
-router.get('/users', (req: Request, res: Response)=>{
-    res.json({status: 201, users: myUser})
-})
-
-router.post('/sum', (req: Request, res: Response)=>{
-    let numbersArr: number[] = req.body.numbers
-    let sum: number = 0
-    numbersArr.forEach((element) =>
-        sum = sum + element
-   )
-    res.json({'sum': sum})
-})
-
-export default router
+export default router;

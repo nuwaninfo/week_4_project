@@ -1,17 +1,17 @@
-const submitButton = document.getElementById("submit-button")
-const getUsersButton = document.getElementById("getUsers")
+const submitButton = document.getElementById("submit-data")
 
-// Add user
+// Add todo
 submitButton.addEventListener("click", async function() {
-    const name = document.getElementById("name").value
-    const email = document.getElementById("email").value
+   
+    const name = document.getElementById("userInput").value
+    const todo = document.getElementById("todoInput").value
 
     const userFormData = {
         name: name,
-        email: email
+        todos: todo
     };
 
-    const userData = await fetch("http://localhost:3000/users", {
+    const userData = await fetch("http://localhost:3000/add", {
         method: "post",
         headers: {
             "Content-type": "application/json"
@@ -20,25 +20,6 @@ submitButton.addEventListener("click", async function() {
     })
     const userDataJson = await userData.json()
     console.log(userDataJson)
-})
-
-const userList = document.getElementById("userList")
-
-// Get users
-getUsersButton.addEventListener("click", async function() {
-   
-    const userData = await fetch("http://localhost:3000/users")
-    const usersJson = await userData.json()
-
-    
-    console.log(usersJson.users[0].name)
-    usersJson.users.forEach(user => {
-       
-        let newListItem = document.createElement("li")
-        newListItem.appendChild(document.createTextNode(`${user.name} - ${user.email}`))
-        userList.appendChild(newListItem)
-    });
-    
 })
 
 
