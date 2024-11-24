@@ -1,4 +1,5 @@
 const submitButton = document.getElementById("submit-data")
+const showMessageSpan = document.getElementById("showMessage")
 
 // Add todo
 submitButton.addEventListener("click", async function() {
@@ -19,7 +20,14 @@ submitButton.addEventListener("click", async function() {
         body: JSON.stringify(userFormData)
     })
     const userDataJson = await userData.json()
-    console.log(userDataJson)
+  
+    showMessageSpan.innerHTML = '';
+    let newP = document.createElement("p")
+    newP.id = 'showMesgP';
+    newP.textContent = userDataJson.message;
+    showMessageSpan.appendChild(newP)
+    
+    console.log(userDataJson.message)
 })
 
 
