@@ -9,7 +9,7 @@ submitButton.addEventListener("click", async function() {
 
     const userFormData = {
         name: name,
-        todos: todo
+        todo: todo
     };
 
     const userData = await fetch("http://localhost:3000/add", {
