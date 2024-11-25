@@ -4,10 +4,10 @@ const express_1 = require("express");
 const fs_1 = require("fs");
 const router = (0, express_1.Router)();
 let userArr = [];
+let message;
 router.post("/add", async (req, res) => {
     let name = req.body.name;
     let todo = req.body.todo;
-    let message;
     try {
         const todoData = await fs_1.promises.readFile("data/todo.json", "utf8");
         userArr = JSON.parse(todoData);
@@ -34,4 +34,27 @@ router.post("/add", async (req, res) => {
     message = `Todo added successfully for user ${name}.`;
     res.json({ message: message });
 }); // End add()
+//  Fetch users and their todos based on their name
+router.get("/todos/:id", async (req, res) => {
+    const { id } = req.params;
+    console.log('id', req.params);
+    try {
+        const data = await fs_1.promises.readFile("data/todo.json", "utf8");
+        const userArr = JSON.parse(data);
+        const user = userArr.find((u) => u.name === id);
+        console.log('tyep of user: ', typeof user);
+        if (typeof user === "undefined") {
+            message = `User with name ${id} not found.`;
+            res.json({ message: message, data: '' });
+        }
+        else {
+            message = 'User found';
+            res.json({ message: message, data: user });
+        }
+    }
+    catch (err) {
+        console.error("Error fetching user:", err);
+    }
+});
+// End Fetch users
 exports.default = router;
