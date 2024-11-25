@@ -12,7 +12,10 @@
   "dependencies": {
     "express": "^4.21.1",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.7",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "tsc-watch": "^6.2.1"
   }
 }
