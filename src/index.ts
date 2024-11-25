@@ -55,8 +55,7 @@ router.post("/add", async (req: Request, res: Response) => {
 
 //  Fetch users and their todos based on their name
 router.get("/todos/:id", async (req: Request, res: Response) => {
-  const { id }   = req.params;
-  console.log('id', req.params)
+  const { id }   = req.params
 
   try {
     const data = await fs.readFile("data/todo.json", "utf8");
@@ -78,5 +77,25 @@ router.get("/todos/:id", async (req: Request, res: Response) => {
   }
 });
 // End Fetch users
+
+// Delete route
+router.delete("/delete", async (req: Request, res: Response) => {
+ 
+  let name: string = req.body.name
+
+  try {
+    const data = await fs.readFile("data/todo.json", "utf8");
+    let userArr: TUser[] = JSON.parse(data);
+
+    userArr = userArr.filter((u) => u.name !== name);
+
+    await fs.writeFile("data/todo.json", JSON.stringify(userArr, null, 2));
+
+    res.json({ message: "User deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+  }
+ 
+})
 
 export default router;

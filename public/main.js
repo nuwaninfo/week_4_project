@@ -33,6 +33,11 @@ submitButton.addEventListener("click", async function() {
 
 // Search event handler
 searchButton.addEventListener("click", async function() {
+    showTodosDiv.innerHTML = ''
+
+    if (document.getElementById("deleteUser")) {
+        document.getElementById("deleteUser").remove();
+    }
 
     const name = searchInput.value.trim();
 
@@ -46,14 +51,45 @@ searchButton.addEventListener("click", async function() {
         const li = document.createElement("li");
         li.textContent = todo; 
         ul.appendChild(li);  
-        console.log(todo)
+        
+        
+       
     })
     showTodosDiv.appendChild(ul);
+
+    // create the delete button
+    const deleteUserButton = document.createElement("button");
+    deleteUserButton.id = 'deleteUser'
+    deleteUserButton.setAttribute("type", "button");
+    deleteUserButton.textContent = "Delete User";
+    searchButton.insertAdjacentElement("afterend", deleteUserButton);
+
+    // delte event
+    deleteUserButton.addEventListener("click", async () => {
+        try {
+          // Make DELETE request to the server
+          const deleteResponse = await fetch("http://localhost:3000/delete", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name }),
+          });
+    
+          const deleteData = await deleteResponse.json();
+    
+          showTodosDiv.innerHTML = deleteData.message;
+          deleteUserButton.remove()
+        } catch (err) {
+          console.error("Error deleting user:", err);
+          showTodosDiv.innerHTML = "An error occurred while deleting the user.";
+        }
+      });
+
     } else {
         showTodosDiv.innerText = todosJson.message
     }
 })
 
-function addTodos() {
 
-}
+
