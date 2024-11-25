@@ -62,9 +62,13 @@ router.delete("/delete", async (req, res) => {
     try {
         const data = await fs_1.promises.readFile("data/todo.json", "utf8");
         let userArr = JSON.parse(data);
+        const initialLength = userArr.length;
         userArr = userArr.filter((u) => u.name !== name);
+        if (userArr.length === initialLength) {
+            res.json({ message: `User with name "${name}" not found.`, "data": "" });
+        }
         await fs_1.promises.writeFile("data/todo.json", JSON.stringify(userArr, null, 2));
-        res.json({ message: "User deleted successfully." });
+        res.json({ message: "User deleted successfully.", "data": "" });
     }
     catch (err) {
         console.error("Error deleting user:", err);
