@@ -82,7 +82,8 @@ router.get("/todos/:id", async (req: Request, res: Response) => {
     console.log('tyep of user: ', typeof user)
 
     if (typeof user === "undefined") {
-      message = `User with name ${id} not found.`
+      //message = `User with name ${id} not found.`
+      message = "User not found"; 
       res.json({message: message, data: ''})
     } else {
       message = 'User found'
