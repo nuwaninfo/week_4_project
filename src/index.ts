@@ -1,12 +1,30 @@
 import { Request, Response, Router } from "express";
 import { promises as fs } from "fs";
+import path from "path"
 
 const router: Router = Router();
+
+const TODO_FILE = path.join(__dirname, "../../data.json");
 
 type TUser = {
   name: string;
   todos: string[];
 };
+
+
+const initializeDataFile = async () => {
+  try {
+    await fs.access(TODO_FILE);
+  } catch {
+    await fs.writeFile(TODO_FILE, JSON.stringify([]));
+  }
+};
+
+// Create the data file
+initializeDataFile().then(() => {
+  console.log("Data file initialization completed.");
+});
+
 
 let userArr: TUser[] = [];
 let message: string
@@ -14,11 +32,9 @@ let message: string
 router.post("/add", async (req: Request, res: Response) => {
   let name: string = req.body.name
   let todo: string = req.body.todo
- 
-
   
     try {
-      const todoData = await fs.readFile("data/todo.json", "utf8");
+      const todoData = await fs.readFile(TODO_FILE, "utf8");
       
       userArr = JSON.parse(todoData);
       
@@ -46,7 +62,7 @@ router.post("/add", async (req: Request, res: Response) => {
       updatedUsers.push({ name, todos: [todo] });
     }
     
-    await fs.writeFile("data/todo.json", JSON.stringify(updatedUsers, null, 2), "utf8"); 
+    await fs.writeFile(TODO_FILE, JSON.stringify(updatedUsers, null, 2), "utf8"); 
     message = `Todo added successfully for user ${name}.`
     res.json({message: message})
   
@@ -58,7 +74,7 @@ router.get("/todos/:id", async (req: Request, res: Response) => {
   const { id }   = req.params
 
   try {
-    const data = await fs.readFile("data/todo.json", "utf8");
+    const data = await fs.readFile(TODO_FILE, "utf8");
     const userArr: TUser[] = JSON.parse(data);
     
    
@@ -84,7 +100,7 @@ router.delete("/delete", async (req: Request, res: Response) => {
   let name: string = req.body.name
 
   try {
-    const data = await fs.readFile("data/todo.json", "utf8");
+    const data = await fs.readFile(TODO_FILE, "utf8");
     let userArr: TUser[] = JSON.parse(data);
 
     const initialLength = userArr.length;
@@ -94,7 +110,7 @@ router.delete("/delete", async (req: Request, res: Response) => {
       res.json({ message: `User with name "${name}" not found.`, "data" : "" });
     }
 
-    await fs.writeFile("data/todo.json", JSON.stringify(userArr, null, 2));
+    await fs.writeFile(TODO_FILE, JSON.stringify(userArr, null, 2));
 
     res.json({ message: "User deleted successfully.", "data" : "" });
   } catch (err) {
@@ -111,7 +127,7 @@ router.put("/update", async (req: Request, res: Response) => {
   let todoDelete : boolean = false
 
   try {
-    const data = await fs.readFile("data/todo.json", "utf8");
+    const data = await fs.readFile(TODO_FILE, "utf8");
     const userArr: TUser[] = JSON.parse(data);
 
     const userIndex = userArr.findIndex((user) => user.name === name);
@@ -129,7 +145,7 @@ router.put("/update", async (req: Request, res: Response) => {
     }
     userArr[userIndex].todos.splice(todoIndex, 1);
 
-    await fs.writeFile("data/todo.json", JSON.stringify(userArr, null, 2));
+    await fs.writeFile(TODO_FILE, JSON.stringify(userArr, null, 2));
     message = "Todo deleted successfully."
     todoDelete = true
     res.json({message: message, todoDelete: todoDelete});
