@@ -3,6 +3,7 @@ const showMessageSpan = document.getElementById("showMessage")
 const searchInput = document.getElementById("searchInput")
 const searchButton = document.getElementById("search")
 const showTodosDiv = document.getElementById("showTodos")
+const showTodosDelMsg = document.getElementById("showTodosDelMsg")
 
 // Add todo
 submitButton.addEventListener("click", async function() {
@@ -34,6 +35,7 @@ submitButton.addEventListener("click", async function() {
 // Search event handler
 searchButton.addEventListener("click", async function() {
     showTodosDiv.innerHTML = ''
+    showTodosDelMsg.innerHTML = ''
 
     if (document.getElementById("deleteUser")) {
         document.getElementById("deleteUser").remove();
@@ -49,13 +51,21 @@ searchButton.addEventListener("click", async function() {
     if (todosJson.data && todosJson.data.todos) {
     todosJson.data.todos.forEach(todo => {
         const li = document.createElement("li");
-        li.textContent = todo; 
+        const a = document.createElement("a");
+
+        a.textContent = todo;
+        a.href = "#";
+        a.className = "delete-task";
+
+        li.appendChild(a); 
         ul.appendChild(li);  
         
         
        
     })
     showTodosDiv.appendChild(ul);
+
+    const deleteA = document.getElementsByClassName("delete-task");
 
     // create the delete button
     const deleteUserButton = document.createElement("button");
@@ -64,7 +74,7 @@ searchButton.addEventListener("click", async function() {
     deleteUserButton.textContent = "Delete User";
     searchButton.insertAdjacentElement("afterend", deleteUserButton);
 
-    // delte event
+    // delte user
     deleteUserButton.addEventListener("click", async () => {
         try {
           // Make DELETE request to the server
@@ -81,15 +91,39 @@ searchButton.addEventListener("click", async function() {
           showTodosDiv.innerHTML = deleteData.message;
           deleteUserButton.remove()
         } catch (err) {
-          console.error("Error deleting user:", err);
+          
           showTodosDiv.innerHTML = "An error occurred while deleting the user.";
         }
-      });
+      })
+
+
+       // delete a todo of a user
+        const todoA = document.querySelectorAll(".delete-task");
+
+       
+        todoA.forEach(link => {
+        link.addEventListener("click", async function(event) {
+            event.preventDefault(); 
+
+            let todo = this.textContent
+
+            const deleteResponse = await fetch("http://localhost:3000/update", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, todo }),
+              });
+
+            const deleteTodoMsg = await deleteResponse.json(); 
+            this.parentElement.remove()
+            showTodosDelMsg.innerHTML = deleteTodoMsg.message;
+           
+         });
+        });
 
     } else {
         showTodosDiv.innerText = todosJson.message
     }
-})
+}) // End search event handler
 
 
 

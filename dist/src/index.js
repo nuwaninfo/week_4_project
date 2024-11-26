@@ -74,4 +74,33 @@ router.delete("/delete", async (req, res) => {
         console.error("Error deleting user:", err);
     }
 });
+// update todos (delete todos)
+router.put("/update", async (req, res) => {
+    const { name, todo } = req.body;
+    let todoDelete = false;
+    try {
+        const data = await fs_1.promises.readFile("data/todo.json", "utf8");
+        const userArr = JSON.parse(data);
+        const userIndex = userArr.findIndex((user) => user.name === name);
+        if (userIndex === -1) {
+            message = "User not found";
+            res.json({ message: message });
+            process.exit(0);
+        }
+        const todoIndex = userArr[userIndex].todos.indexOf(todo);
+        if (todoIndex === -1) {
+            message = "Todo not found";
+            res.json({ message: message });
+            process.exit(0);
+        }
+        userArr[userIndex].todos.splice(todoIndex, 1);
+        await fs_1.promises.writeFile("data/todo.json", JSON.stringify(userArr, null, 2));
+        message = "Todo deleted successfully.";
+        todoDelete = true;
+        res.json({ message: message, todoDelete: todoDelete });
+    }
+    catch (err) {
+        console.error("Error updating todo:", err);
+    }
+});
 exports.default = router;
