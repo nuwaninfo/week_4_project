@@ -47,6 +47,7 @@ searchButton.addEventListener("click", async function() {
     const todosJson = await response.json()
 
     const ul = document.createElement("ul");
+    ul.id="todoList"
 
     if (todosJson.data && todosJson.data.todos) {
     todosJson.data.todos.forEach(todo => {
